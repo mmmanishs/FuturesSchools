@@ -17,7 +17,9 @@ class SchoolDetailTableViewCell: UITableViewCell {
         switch cellValue.cellProperty {
         case .openSafari, .openEmail:
             self.accessoryType = .disclosureIndicator
-        default:break
+        default:
+            self.accessoryType = .none
+
         }
     }
 }

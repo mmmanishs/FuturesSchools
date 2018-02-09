@@ -25,7 +25,7 @@ class SchoolsListViewController: UIViewController, UITableViewDataSource, UITabl
         isDataLoading(isLoading: true)
         self.tableview.alpha = 0.5
         DispatchQueue.global().async {
-            DataManager().getViewModel() { viewModel in
+            DataManager().getViewModel() { [unowned self] viewModel in
                 self.viewModel = viewModel
                 DispatchQueue.main.async {
                     if viewModel.showError {
