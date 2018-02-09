@@ -30,6 +30,8 @@ class NycSchool: Codable {
     var sat_math_avg_score: String?
     var sat_writing_avg_score: String?
     
+    
+    //It would be nice to get some unit test around this
     func merge(school:NycSchool) -> Bool {
         if self.dbn == school.dbn {
             self.num_of_sat_test_takers = school.num_of_sat_test_takers
