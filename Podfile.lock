@@ -1,0 +1,15 @@
+PODS:
+  - PromisesObjC (1.0.3)
+  - PromisesSwift (1.0.3):
+    - PromisesObjC (= 1.0.3)
+
+DEPENDENCIES:
+  - PromisesSwift (~> 1.0)
+
+SPEC CHECKSUMS:
+  PromisesObjC: 9b58f509a9dc23d9a3f01b6aeb2cb9416ade3d41
+  PromisesSwift: fec7ae00af032da2ba3172c8a5468ad9bbf83160
+
+PODFILE CHECKSUM: 21a6c6a042bcc287c20cb4466f1c2592f414ebda
+
+COCOAPODS: 1.4.0

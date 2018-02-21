@@ -8,8 +8,8 @@
 
 import Foundation
 import Alamofire
-
-enum APIError {
+import Promises
+enum APIError: Error {
     case apiError
 }
 //Result with help us neatly deal with success/error scenarios in completion block.
@@ -21,30 +21,31 @@ enum Result<T> {
 
 //Any object can now act as a data provider if they Adhere to this protocol
 protocol DataProvider {
-    func getSchoolsData(completionHandler: @escaping(Result<[NycSchool]>) ->())
+    func getSchoolsData() -> Promise<[NycSchool]>
 }
 
 
 class RemoteDataController: DataProvider {
-    func getSchoolsData(completionHandler: @escaping(Result<[NycSchool]>) ->()) { //Url needs to be passed as param
+    func getSchoolsData() -> Promise<[NycSchool]> {
         let endPoint: String = "https://data.cityofnewyork.us/resource/97mf-9njv.json"
-        Alamofire.request(endPoint)
-            .responseData() { response in
-                if let data = response.result.value {
-                    let decoder = JSONDecoder()
-                    do {
-                        let nycSchools = try decoder.decode([NycSchool].self, from: data) as [NycSchool]
-                        completionHandler(Result.success(nycSchools))
-                        
-                    } catch {
-                        print("error trying to convert data to JSON")
-                        print(error)
-                        completionHandler(Result.failure(APIError.apiError))
+        return Promise { fullfil, reject in
+            Alamofire.request(endPoint)
+                .responseData() { response in
+                    if let data = response.result.value {
+                        let decoder = JSONDecoder()
+                        do {
+                            let nycSchools = try decoder.decode([NycSchool].self, from: data) as [NycSchool]
+                            fullfil(nycSchools)
+                            
+                        } catch {
+                            reject(error)
+                        }
+                    } else {
+                        reject(APIError.apiError)
                     }
-                } else {
-                    completionHandler(Result.failure(APIError.apiError))
-                }
+            }
         }
+        
     }
     
     func getSchoolSATData(completionHandler: @escaping(Result<[NycSchool]>) ->()) { //Url needs to be passed as param

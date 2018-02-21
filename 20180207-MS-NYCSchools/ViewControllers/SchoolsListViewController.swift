@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Promises
 class SchoolsListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     let navigationTitleText = "NYC High Schools"
@@ -25,19 +25,21 @@ class SchoolsListViewController: UIViewController, UITableViewDataSource, UITabl
         isDataLoading(isLoading: true)
         self.tableview.alpha = 0.5
         DispatchQueue.global().async {
-            DataManager().getViewModel() { [unowned self] viewModel in
-                self.viewModel = viewModel
+            let promise = DataManager().getViewModel()
+            promise.then(){ viewModel in
                 DispatchQueue.main.async {
+                    self.viewModel = viewModel
+                    self.isDataLoading(isLoading: false)
                     if viewModel.showError {
                         //Show some error screen (Lack of time, to develop one. So a comment has to suffice)
                     } else {
-                        self.isDataLoading(isLoading: false)
                         self.tableview.reloadData()
                         self.tableview.alpha = 1.0
                     }
                 }
+                }.catch {_ in
+                    self.isDataLoading(isLoading: false)
             }
-            
         }
     }
     

@@ -1,0 +1,6 @@
+framework module Pods_20180207_MS_NYCSchools {
+  umbrella header "Pods-20180207-MS-NYCSchools-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -7,34 +7,19 @@
 //
 
 import Foundation
+import Promises
 class DataManager {
     
     //Data manager hides the RemoteDataController from the view classes. This would help if lets say we need data from a Local Data Storage instead..!
-    func getViewModel(completion:@escaping(SchoolListViewModel) -> ()) {
-        RemoteDataController().getSchoolsData() { result in
-            switch result {
-            case .success(let nycSchools):
-                //I want to use Operartion queue with dependencies here to run both tasks parallely. This will reduce API call time, and will result in much etter performance and less bugs (Lack of time to design)
-                //Basically API 1 and API 2 will be called simultaneouslty and will be dependent on each other for the merge data function to call. The UI would be displayed as soon as the API call for the main list data finishes.
-                //I regret not putting this solution in place. In a rush
-                self.updateDataModelsWithSATScores(schools: nycSchools) { result in
-                    switch result {
-                    case .success(let nycSchools):
-                        let viewModel = SchoolListViewModel(schools: nycSchools, showError: false)
-                        completion(viewModel)
-                    case .failure( _) :
-                        let viewModel = SchoolListViewModel(schools: nil, showError: true)
-                        completion(viewModel)                    }
-                }
-                
-            case .failure(let error):
-                switch error {
-                case .apiError:
-                    let viewModel = SchoolListViewModel(schools: nil, showError: true)
-                    completion(viewModel)
-                }
-            }
+    func getViewModel() -> Promise<SchoolListViewModel>  {
+        let returnPromise = Promise<SchoolListViewModel>.pending()
+        let promise = RemoteDataController().getSchoolsData()
+            promise.then() { schools in
+                returnPromise.fulfill(SchoolListViewModel(schools: schools, showError: false))
+                }.catch() {error in
+                    returnPromise.reject(error)
         }
+        return returnPromise
     }
     
     func updateDataModelsWithSATScores(schools:[NycSchool], completion:@escaping(Result<[NycSchool]>) -> ()) {
